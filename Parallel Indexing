@@ -1,0 +1,2 @@
+create index IDX_CHRG_TRAN_LOG_EVENT_ID on TBAADM.CHRG_TRAN_LOG_TBL(event_id) parallel 32 compute statistics;
+alter index IDX_CHRG_TRAN_LOG_EVENT_ID noparallel;
