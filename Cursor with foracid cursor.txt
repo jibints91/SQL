@@ -1,0 +1,32 @@
+declare
+
+
+CURSOR C1 IS
+select foracid
+From abc g
+where schm_code in ('79422')
+and acct_cls_date is null
+order by 1;
+
+
+begin
+
+
+execute immediate'truncate table ji_nlc_11';
+FOR CUR1 IN C1
+LOOP
+--drop table ji_nlc_11;
+--create table ji_nlc_11
+--as
+insert into ji_nlc_11
+select field_7 branch,field_2 date1,field_3 scheme,field_4 name1,field_9 acct,
+field_10 addr1,field_11 addr2,field_15 opbal,field_16 princ,field_17 int1,field_18 total,Field_12 stmt
+from table (mis.PROV_INT_CERT_SQD(LPAD(CUR1.foracid,14)));
+commit;
+end loop;
+
+
+end;
+
+
+/
