@@ -1,0 +1,57 @@
+
+declare
+cursor cur_vsn_test1 is
+SELECT A.ROWID ROW_ID--,A.Claps_Id,b.cbs_cust_id, row_number() over(partition by B.Claps_Id order by b.cbs_cust_id) rnk
+FROM VSN_DEPOSIT_TABLE_TMP A;
+
+type type_vsn_test1 is table of cur_vsn_test1%rowtype;
+t_vsn_test1 type_vsn_test1;
+
+L_REC_COUNT NUMBER := 0;
+commit_size pls_integer := 10000;
+
+BEGIN
+
+--------------------------------------------------------------------------------------------------
+-- UPDATION BEGIN
+--------------------------------------------------------------------------------------------------
+BEGIN
+EXECUTE IMMEDIATE 'truncate table VSN_TIMELOG';
+
+open cur_vsn_test1;
+loop
+fetch cur_vsn_test1 bulk collect
+into t_vsn_test1 limit commit_size;
+
+l_rec_count := t_vsn_test1.count;
+
+exit when l_rec_count = 0;
+
+begin
+forall i in 1 .. l_rec_count save exceptions
+
+update VSN_DEPOSIT_TABLE_TMP j
+SET
+
+comm_addr_1 =t_vsn_test1(i).t_vsn_test1(i).
+where ROWID = t_vsn_test1(i).ROW_ID
+;
+COMMIT;
+
+INSERT INTO VSN_TIMELOG
+select '100', sysdate from dual;
+end;
+commit;
+end loop;
+
+close cur_vsn_test1;
+commit;
+
+end;
+commit;
+--------------------------------------------------------------------------------------------------
+-- UPDATION END
+--------------------------------------------------------------------------------------------------
+
+END;
+/
